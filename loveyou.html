@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Yêu thương rơi</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <style>
     html, body {
       margin: 0; padding: 0;
@@ -38,7 +38,7 @@
       animation: fall linear infinite;
       white-space: nowrap;
       color: #ffb6c1;
-      font-size: 22px;
+      font-size: 20px;
       text-shadow: 0 0 10px #ff69b4, 0 0 15px #ff69b4;
       max-width: 90vw;
       overflow-wrap: break-word;
@@ -58,7 +58,7 @@
       pointer-events: none;
       user-select: none;
       animation: fallHeart 7s linear forwards;
-      font-size: 24px;
+      font-size: 16px; /* nhỏ hơn trước */
       opacity: 1;
       z-index: 5;
     }
@@ -111,10 +111,11 @@
     /* Responsive cho điện thoại */
     @media screen and (max-width: 600px) {
       .falling {
-        font-size: 16px;
-        white-space: normal;
+        font-size: 18px !important;
+        white-space: normal !important;
         max-width: 90vw;
         text-align: center;
+        left: 5vw !important; /* đặt lại vị trí để không bị lệch quá */
       }
       #message {
         font-size: 18px;
@@ -134,7 +135,6 @@
 </div>
 
 <script>
-  // Dữ liệu chữ rơi
   const textLines = [
     "Chúc em yêu 01/06 vui vẻ, hạnh phúc",
     "Em mãi là em bé đáng yêu của anh",
@@ -144,11 +144,10 @@
     "Nơi bình yên nhất là được ở bên em",
     "Anh yêu em nhiều hơn những gì có thể nói",
     "Nụ cười em là bình yên nhất",
-    "Mỗi ngày có em là mỗi ngày ngọt ngào",
+    "Việt Duy 💗 Ánh Tuyết",
     "Một ánh nhìn, vạn lần rung động"
   ];
 
-  // Mảng trái tim
   const heartsArray = ["💗", "💓", "💖", "💞", "💝", "❤️", "💕"];
 
   // Tạo ngôi sao nền
@@ -161,15 +160,14 @@
     document.body.appendChild(star);
   }
 
-  // Tạo chữ rơi ngay từ đầu (chưa ẩn)
+  // Tạo chữ rơi
   textLines.forEach((line, i) => {
     const text = document.createElement('div');
     text.className = 'falling';
     text.textContent = line;
-    // Vị trí ngang ngẫu nhiên, tránh tràn ra ngoài màn hình
-    const leftPos = Math.random() * 75; // max 75vw để chữ không bị cắt
+    // Vị trí ngang ngẫu nhiên (desktop)
+    const leftPos = Math.random() * 75;
     text.style.left = `${leftPos}vw`;
-    // Thời gian và delay rơi ngẫu nhiên
     text.style.animationDuration = `${10 + Math.random() * 5}s`;
     text.style.animationDelay = `${i * 1.5}s`;
     document.body.appendChild(text);
@@ -184,14 +182,12 @@
   const container = document.getElementById('container');
   const playBtn = document.getElementById('playBtn');
 
-  let heartsInterval;
-
   function createHeart() {
     const heart = document.createElement('div');
     heart.className = 'heart';
     heart.textContent = heartsArray[Math.floor(Math.random() * heartsArray.length)];
     heart.style.left = `${Math.random() * 100}vw`;
-    heart.style.fontSize = `${20 + Math.random() * 30}px`;
+    heart.style.fontSize = `${12 + Math.random() * 20}px`; // nhỏ hơn trước
     document.body.appendChild(heart);
 
     heart.addEventListener('animationend', () => {
@@ -202,9 +198,7 @@
   playBtn.addEventListener('click', () => {
     bgMusic.play().catch(e => console.warn("Không thể phát nhạc:", e));
     container.style.display = 'none';
-
-    // Bắt đầu tạo trái tim mỗi 300ms
-    heartsInterval = setInterval(createHeart, 300);
+    setInterval(createHeart, 300);
   });
 </script>
 
