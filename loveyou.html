@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <title>PLEASE CLICK THIS</title>
+  <title>Hiệu ứng trái tim rơi với nút Play</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     html, body {
@@ -11,17 +11,25 @@
       background: #000;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       color: #ffb6c1;
+      overflow: hidden;
+      user-select: none;
+      position: relative;
+    }
+    #container {
+      position: relative;
+      height: 100vh;
+      width: 100vw;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      overflow: hidden;
-      user-select: none;
+      z-index: 10; /* trên ngôi sao */
     }
     #message {
       font-size: 24px;
       margin-bottom: 20px;
       text-shadow: 0 0 10px #ff69b4;
+      text-align: center;
     }
     #playBtn {
       font-size: 20px;
@@ -37,14 +45,31 @@
     #playBtn:hover {
       background: #ff85c1;
     }
+    /* Ngôi sao */
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 3s ease-in-out infinite;
+      opacity: 0.3;
+      z-index: 1;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 0.8; }
+    }
+    /* Trái tim */
     .heart {
       position: absolute;
       color: pink;
       pointer-events: none;
       user-select: none;
-      animation: fall linear forwards;
+      animation: fall 7s linear forwards;
       font-size: 24px;
-      opacity: 0;
+      opacity: 1;
+      z-index: 5;
     }
     @keyframes fall {
       0% {
@@ -60,50 +85,55 @@
 </head>
 <body>
 
-  <div id="message">Bấm vào nút dưới đây</div>
-  <button id="playBtn">Play</button>
-
-  <audio id="bgMusic" loop>
-    <source src="https://raw.githubusercontent.com/vietduygiapdz/loveyou/8d9cc83b0ba45c645bde7ba9562b460eb8aeac4b/utomp3.com%20-%20Ph%C3%A9p%20M%C3%A0u%20%C4%90%C3%A0n%20C%C3%A1%20G%E1%BB%97%20OST%20%20Mounter%20x%20MAYDAYs%20Minh%20T%E1%BB%91c%20%20Official%20MV%20(1).mp3" type="audio/mpeg" />
-    Trình duyệt của bạn không hỗ trợ thẻ audio.
-  </audio>
+  <div id="container">
+    <div id="message">Bấm vào nút dưới đây</div>
+    <button id="playBtn">Play</button>
+  </div>
 
 <script>
+  // Tạo ngôi sao nền
+  for (let i = 0; i < 150; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.top = `${Math.random() * 100}vh`;
+    star.style.left = `${Math.random() * 100}vw`;
+    star.style.animationDuration = `${2 + Math.random() * 3}s`;
+    document.body.appendChild(star);
+  }
+
   const playBtn = document.getElementById('playBtn');
   const message = document.getElementById('message');
-  const bgMusic = document.getElementById('bgMusic');
+  const container = document.getElementById('container');
+
   const heartsArray = ["💗", "💓", "💖", "💞", "💝", "❤️", "💕"];
   let heartsInterval;
+  
+  // Tạo thẻ audio để phát nhạc
+  const bgMusic = document.createElement('audio');
+  bgMusic.src = 'https://raw.githubusercontent.com/vietduygiapdz/loveyou/8d9cc83b0ba45c645bde7ba9562b460eb8aeac4b/utomp3.com%20-%20Ph%C3%A9p%20M%C3%A0u%20%C4%90%C3%A0n%20C%C3%A1%20G%E1%BB%97%20OST%20%20Mounter%20x%20MAYDAYs%20Minh%20T%E1%BB%91c%20%20Official%20MV%20(1).mp3';
+  bgMusic.loop = true;
+  document.body.appendChild(bgMusic);
 
   function createHeart() {
     const heart = document.createElement('div');
     heart.classList.add('heart');
     heart.textContent = heartsArray[Math.floor(Math.random() * heartsArray.length)];
-
-    // Vị trí trái phải ngẫu nhiên trong viewport
     heart.style.left = `${Math.random() * 100}vw`;
-    // Kích thước ngẫu nhiên
     heart.style.fontSize = `${20 + Math.random() * 30}px`;
-
     document.body.appendChild(heart);
 
-    // Hiện dần và bắt đầu animation fall
-    heart.style.opacity = 1;
-
-    // Sau 5-7 giây remove trái tim khỏi DOM
-    setTimeout(() => {
+    heart.addEventListener('animationend', () => {
       heart.remove();
-    }, 7000);
+    });
   }
 
   playBtn.addEventListener('click', () => {
-    bgMusic.play().catch(e => {
-      console.warn("Không thể phát nhạc:", e);
-    });
-    message.textContent = "Nhạc đang phát và trái tim rơi rồi đó!";
-    playBtn.style.display = 'none';
+    bgMusic.play().catch(e => console.warn("Không thể phát nhạc:", e));
 
-    // Tạo trái tim mỗi 300ms
+    // Ẩn nút và chữ
+    container.style.display = 'none';
+
+    // Bắt đầu rơi trái tim liên tục
     heartsInterval = setInterval(createHeart, 300);
   });
 </script>
