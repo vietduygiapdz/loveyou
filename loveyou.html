@@ -34,7 +34,10 @@
       position: absolute;
       top: -100px;
       animation: fall linear infinite;
-      white-space: nowrap;
+      max-width: 20vw;              /* Giới hạn chiều rộng chữ */
+      overflow-wrap: break-word;    /* Cho phép xuống dòng */
+      word-break: break-word;
+      white-space: normal;          /* Bỏ nowrap để chữ xuống dòng */
     }
 
     @keyframes fall {
@@ -47,10 +50,7 @@
       color: #ffb6c1;
       font-size: 22px;
       text-shadow: 0 0 10px #ff69b4, 0 0 15px #ff69b4;
-      max-width: 25vw; /* Giảm max-width */
-      overflow-wrap: break-word;
-      white-space: normal; /* cho xuống dòng nếu cần */
-      transform: translateX(-50%); /* Căn giữa text theo left */
+      max-width: 20vw;
     }
 
     .heart {
@@ -76,6 +76,7 @@
       }
 
       .falling {
+        max-width: 90vw;
         white-space: normal;
         text-align: center;
       }
@@ -100,7 +101,7 @@
     "Anh yêu em nhiều hơn những gì có thể nói",
     "Nụ cười em là bình yên nhất",
     "Mỗi ngày có em là mỗi ngày ngọt ngào",
-    "Việt Duy ❤️ Ánh Tuyết"
+    "Một ánh nhìn, vạn lần rung động"
   ];
 
   const hearts = ["💗", "💓", "💖", "💞", "💝", "❤️", "💕"];
@@ -115,15 +116,16 @@
     document.body.appendChild(star);
   }
 
-  // Chữ rơi - căn giữa, tránh tràn
-  const maxTextWidthVW = 25;
+  // Chữ rơi với vị trí ngang ngẫu nhiên và không tràn màn hình
   textLines.forEach((line, i) => {
     const text = document.createElement('div');
     text.className = 'falling glow-text';
     text.textContent = line;
-    // left tính từ 12.5vw đến 87.5vw (căn giữa = 12.5vw biên)
-    const left = Math.random() * (100 - maxTextWidthVW) + maxTextWidthVW / 2;
+
+    const maxWidthVW = 20; // Phù hợp với max-width CSS
+    const left = Math.random() * (100 - maxWidthVW);
     text.style.left = `${left}vw`;
+
     text.style.animationDuration = `${10 + Math.random() * 5}s`;
     text.style.animationDelay = `${i * 1.5}s`;
     document.body.appendChild(text);
