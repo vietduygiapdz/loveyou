@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>I love you bae</title>
+  <title>Yêu thương rơi</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     html, body {
@@ -34,10 +34,7 @@
       position: absolute;
       top: -100px;
       animation: fall linear infinite;
-      max-width: 20vw;              /* Giới hạn chiều rộng chữ */
-      overflow-wrap: break-word;    /* Cho phép xuống dòng */
-      word-break: break-word;
-      white-space: normal;          /* Bỏ nowrap để chữ xuống dòng */
+      white-space: nowrap;
     }
 
     @keyframes fall {
@@ -50,7 +47,8 @@
       color: #ffb6c1;
       font-size: 22px;
       text-shadow: 0 0 10px #ff69b4, 0 0 15px #ff69b4;
-      max-width: 20vw;
+      max-width: 90vw;
+      overflow-wrap: break-word;
     }
 
     .heart {
@@ -61,11 +59,7 @@
     }
 
     .audio-player {
-      position: fixed;
-      width: 0;
-      height: 0;
-      opacity: 0;
-      pointer-events: none;
+      display: none; /* Ẩn thanh điều khiển */
     }
 
     /* Responsive cho điện thoại */
@@ -76,7 +70,6 @@
       }
 
       .falling {
-        max-width: 90vw;
         white-space: normal;
         text-align: center;
       }
@@ -85,10 +78,11 @@
 </head>
 <body>
 
-<!-- Nhạc nền từ YouTube -->
-<div class="audio-player">
-  <iframe width="0" height="0" src="https://www.youtube.com/embed/jPjQJYKhhk4?autoplay=1&loop=1&playlist=jPjQJYKhhk4&controls=0&mute=0" frameborder="0" allow="autoplay" allowfullscreen></iframe>
-</div>
+<!-- Nhạc nền từ file MP3 trên GitHub -->
+<audio autoplay loop style="display:none;">
+  <source src="https://raw.githubusercontent.com/vietduygiapdz/loveyou/8d9cc83b0ba45c645bde7ba9562b460eb8aeac4b/utomp3.com%20-%20Ph%C3%A9p%20M%C3%A0u%20%C4%90%C3%A0n%20C%C3%A1%20G%E1%BB%97%20OST%20%20Mounter%20x%20MAYDAYs%20Minh%20T%E1%BB%91c%20%20Official%20MV%20(1).mp3" type="audio/mpeg" />
+  Your browser does not support the audio element.
+</audio>
 
 <script>
   const textLines = [
@@ -116,16 +110,13 @@
     document.body.appendChild(star);
   }
 
-  // Chữ rơi với vị trí ngang ngẫu nhiên và không tràn màn hình
+  // Chữ rơi
   textLines.forEach((line, i) => {
     const text = document.createElement('div');
     text.className = 'falling glow-text';
     text.textContent = line;
-
-    const maxWidthVW = 20; // Phù hợp với max-width CSS
-    const left = Math.random() * (100 - maxWidthVW);
+    const left = Math.random() * 80;
     text.style.left = `${left}vw`;
-
     text.style.animationDuration = `${10 + Math.random() * 5}s`;
     text.style.animationDelay = `${i * 1.5}s`;
     document.body.appendChild(text);
