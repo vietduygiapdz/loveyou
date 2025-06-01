@@ -1,138 +1,111 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8" />
   <title>PLEASE CLICK THIS</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     html, body {
-      margin: 0;
-      padding: 0;
-      background: #000;
-      overflow: hidden;
+      margin: 0; padding: 0;
       height: 100%;
-      font-family: 'Segoe UI', sans-serif;
-    }
-
-    /* Ngôi sao */
-    .star {
-      position: absolute;
-      width: 2px;
-      height: 2px;
-      background: white;
-      border-radius: 50%;
-      animation: twinkle 3s ease-in-out infinite;
-      opacity: 0.3;
-    }
-
-    @keyframes twinkle {
-      0%, 100% { opacity: 0.2; }
-      50% { opacity: 0.8; }
-    }
-
-    .falling {
-      position: absolute;
-      top: -100px;
-      animation: fall linear infinite;
-      white-space: nowrap;
-    }
-
-    @keyframes fall {
-      0% { transform: translateY(-100px); opacity: 0; }
-      10% { opacity: 1; }
-      100% { transform: translateY(110vh); opacity: 0; }
-    }
-
-    .glow-text {
+      background: #000;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       color: #ffb6c1;
-      font-size: 22px;
-      text-shadow: 0 0 10px #ff69b4, 0 0 15px #ff69b4;
-      max-width: 90vw;
-      overflow-wrap: break-word;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      user-select: none;
     }
-
+    #message {
+      font-size: 24px;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px #ff69b4;
+    }
+    #playBtn {
+      font-size: 20px;
+      padding: 10px 30px;
+      border: none;
+      border-radius: 8px;
+      background: #ff69b4;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 0 15px #ff69b4;
+      transition: background 0.3s ease;
+    }
+    #playBtn:hover {
+      background: #ff85c1;
+    }
     .heart {
       position: absolute;
       color: pink;
-      animation: fall linear infinite;
       pointer-events: none;
+      user-select: none;
+      animation: fall linear forwards;
+      font-size: 24px;
+      opacity: 0;
     }
-
-    .audio-player {
-      display: none; /* Ẩn thanh điều khiển */
-    }
-
-    /* Responsive cho điện thoại */
-    @media screen and (max-width: 600px) {
-      .glow-text {
-        font-size: 16px;
-        max-width: 90vw;
+    @keyframes fall {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
       }
-
-      .falling {
-        white-space: normal;
-        text-align: center;
+      100% {
+        transform: translateY(110vh) scale(0.5);
+        opacity: 0;
       }
     }
   </style>
 </head>
 <body>
 
-<!-- Nhạc nền từ file MP3 trên GitHub -->
-<audio autoplay loop style="display:none;">
-  <source src="https://raw.githubusercontent.com/vietduygiapdz/loveyou/8d9cc83b0ba45c645bde7ba9562b460eb8aeac4b/utomp3.com%20-%20Ph%C3%A9p%20M%C3%A0u%20%C4%90%C3%A0n%20C%C3%A1%20G%E1%BB%97%20OST%20%20Mounter%20x%20MAYDAYs%20Minh%20T%E1%BB%91c%20%20Official%20MV%20(1).mp3" type="audio/mpeg" />
-  Your browser does not support the audio element.
-</audio>
+  <div id="message">Bấm vào nút dưới đây</div>
+  <button id="playBtn">Play</button>
+
+  <audio id="bgMusic" loop>
+    <source src="https://raw.githubusercontent.com/vietduygiapdz/loveyou/8d9cc83b0ba45c645bde7ba9562b460eb8aeac4b/utomp3.com%20-%20Ph%C3%A9p%20M%C3%A0u%20%C4%90%C3%A0n%20C%C3%A1%20G%E1%BB%97%20OST%20%20Mounter%20x%20MAYDAYs%20Minh%20T%E1%BB%91c%20%20Official%20MV%20(1).mp3" type="audio/mpeg" />
+    Trình duyệt của bạn không hỗ trợ thẻ audio.
+  </audio>
 
 <script>
-  const textLines = [
-    "Chúc em yêu 01/06 vui vẻ, hạnh phúc",
-    "Em mãi là em bé đáng yêu của anh",
-    "Cảm ơn vì em đã ở bên anh",
-    "Thật may mắn vì có em bên đời",
-    "Mong rằng chúng ta sẽ bên nhau mãi mãi",
-    "Nơi bình yên nhất là được ở bên em",
-    "Anh yêu em nhiều hơn những gì có thể nói",
-    "Nụ cười em là bình yên nhất",
-    "Mỗi ngày có em là mỗi ngày ngọt ngào",
-    "Một ánh nhìn, vạn lần rung động"
-  ];
+  const playBtn = document.getElementById('playBtn');
+  const message = document.getElementById('message');
+  const bgMusic = document.getElementById('bgMusic');
+  const heartsArray = ["💗", "💓", "💖", "💞", "💝", "❤️", "💕"];
+  let heartsInterval;
 
-  const hearts = ["💗", "💓", "💖", "💞", "💝", "❤️", "💕"];
-
-  // Ngôi sao nhấp nháy
-  for (let i = 0; i < 150; i++) {
-    const star = document.createElement('div');
-    star.className = 'star';
-    star.style.top = `${Math.random() * 100}vh`;
-    star.style.left = `${Math.random() * 100}vw`;
-    star.style.animationDuration = `${2 + Math.random() * 3}s`;
-    document.body.appendChild(star);
-  }
-
-  // Chữ rơi
-  textLines.forEach((line, i) => {
-    const text = document.createElement('div');
-    text.className = 'falling glow-text';
-    text.textContent = line;
-    const left = Math.random() * 80;
-    text.style.left = `${left}vw`;
-    text.style.animationDuration = `${10 + Math.random() * 5}s`;
-    text.style.animationDelay = `${i * 1.5}s`;
-    document.body.appendChild(text);
-  });
-
-  // Trái tim rơi
-  for (let i = 0; i < 40; i++) {
+  function createHeart() {
     const heart = document.createElement('div');
-    heart.className = 'heart falling';
-    heart.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
+    heart.classList.add('heart');
+    heart.textContent = heartsArray[Math.floor(Math.random() * heartsArray.length)];
+
+    // Vị trí trái phải ngẫu nhiên trong viewport
     heart.style.left = `${Math.random() * 100}vw`;
-    heart.style.fontSize = `${Math.random() * 30 + 10}px`;
-    heart.style.animationDuration = `${5 + Math.random() * 6}s`;
-    heart.style.animationDelay = `${Math.random() * 10}s`;
+    // Kích thước ngẫu nhiên
+    heart.style.fontSize = `${20 + Math.random() * 30}px`;
+
     document.body.appendChild(heart);
+
+    // Hiện dần và bắt đầu animation fall
+    heart.style.opacity = 1;
+
+    // Sau 5-7 giây remove trái tim khỏi DOM
+    setTimeout(() => {
+      heart.remove();
+    }, 7000);
   }
+
+  playBtn.addEventListener('click', () => {
+    bgMusic.play().catch(e => {
+      console.warn("Không thể phát nhạc:", e);
+    });
+    message.textContent = "Nhạc đang phát và trái tim rơi rồi đó!";
+    playBtn.style.display = 'none';
+
+    // Tạo trái tim mỗi 300ms
+    heartsInterval = setInterval(createHeart, 300);
+  });
 </script>
 
 </body>
