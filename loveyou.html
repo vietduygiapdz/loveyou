@@ -1,137 +1,162 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <title>PLEASE CLICK THIS</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <title>lovingyou</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      background: #000;
+      background: black;
       overflow: hidden;
       height: 100%;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: Arial, sans-serif;
     }
 
-    /* Ngôi sao */
     .star {
       position: absolute;
       width: 2px;
       height: 2px;
       background: white;
       border-radius: 50%;
-      animation: twinkle 3s ease-in-out infinite;
-      opacity: 0.3;
+      animation: twinkle 3s infinite ease-in-out;
     }
 
     @keyframes twinkle {
       0%, 100% { opacity: 0.2; }
-      50% { opacity: 0.8; }
+      50% { opacity: 1; }
+    }
+
+    #scene-container {
+      width: 100vw;
+      height: 100vh;
+      perspective: 1500px;
+      overflow: hidden;
+    }
+
+    #scene {
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transform: rotateX(0deg) rotateY(0deg) scale(0.85);
+      transition: transform 0.1s linear;
+      position: relative;
     }
 
     .falling {
       position: absolute;
-      top: -100px;
-      animation: fall linear infinite;
-      /* Bỏ white-space: nowrap; */
+      top: -10vh;
+      transform-style: preserve-3d;
+      transition: opacity 0.1s;
     }
 
     @keyframes fall {
-      0% { transform: translateY(-100px); opacity: 0; }
-      10% { opacity: 1; }
-      100% { transform: translateY(110vh); opacity: 0; }
+      0% { transform: translateY(0) translateZ(var(--depth)); opacity: 1; }
+      100% { transform: translateY(120vh) translateZ(var(--depth)); opacity: 0; }
     }
 
-    .glow-text {
+    @keyframes colorShift {
+      0%   { color: #ffb6c1; }
+      14%  { color: #c9f9ff; }
+      28%  { color: #f8f8ff; }
+      42%  { color: #b2fefa; }
+      57%  { color: #ffdee9; }
+      71%  { color: #c9f9ff; }
+      85%  { color: #f8f8ff; }
+      100% { color: #ffb6c1; }
+    }
+
+    .text {
+      font-size: 14px;
       color: #ffb6c1;
-      font-size: 18px; /* nhỏ hơn */
-      text-shadow: 0 0 10px #ff69b4, 0 0 15px #ff69b4;
-      max-width: 90vw;
-      overflow-wrap: break-word;
-      white-space: normal; /* để xuống dòng nếu dài */
+      text-shadow: 0 0 10px #ff69b4;
+      will-change: transform, opacity;
+    }
+
+    .animate-text {
+      animation: fall 6s linear forwards, colorShift 8s ease-in-out infinite;
     }
 
     .heart {
-      position: absolute;
+      font-size: 12px;
       color: pink;
-      animation: fall linear infinite;
-      pointer-events: none;
-      font-size: 12px; /* nhỏ lại */
     }
 
-    .audio-player {
+    .animate-heart {
+      animation: fall 5s linear forwards;
+    }
+
+    #intro, #playButton {
       position: fixed;
-      width: 0;
-      height: 0;
-      opacity: 0;
-      pointer-events: none;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 10;
     }
 
-    /* Responsive cho điện thoại */
-    @media screen and (max-width: 600px) {
-      .glow-text {
+    #intro {
+      top: 38%;
+      color: #ffc0cb;
+      font-size: 16px;
+      text-shadow: 0 0 10px #ff69b4;
+      margin-bottom: 8px;
+    }
+
+    #playButton {
+      top: calc(38% + 40px);
+      background: #ff69b4;
+      border: none;
+      color: white;
+      font-size: 16px;
+      padding: 8px 20px;
+      border-radius: 30px;
+      box-shadow: 0 0 10px #ff69b4;
+      cursor: pointer;
+    }
+
+    @media (max-width: 600px) {
+      .text { font-size: 12px; }
+      .heart { font-size: 10px; }
+      #intro { font-size: 14px; }
+      #playButton {
         font-size: 14px;
-        max-width: 90vw;
+        padding: 6px 16px;
       }
     }
 
-    /* Nút Play */
-    #playButton {
-      position: fixed;
-      left: 50%;
-      top: 60%;
-      transform: translateX(-50%);
-      padding: 12px 28px;
-      font-size: 18px;
-      background: #ff69b4;
-      border: none;
-      border-radius: 30px;
-      color: white;
-      cursor: pointer;
-      box-shadow: 0 0 15px #ff69b4;
-      user-select: none;
-    }
-
-    #instructionText {
-      position: fixed;
-      top: 45%;
-      left: 50%;
-      transform: translateX(-50%);
-      color: #ffb6c1;
-      font-size: 20px;
-      text-shadow: 0 0 10px #ff69b4;
-      user-select: none;
+    .hidden {
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10vh) translateZ(var(--depth));
+      animation: none !important;
     }
   </style>
 </head>
 <body>
 
-<!-- Nhạc nền -->
-<audio id="audio" loop>
-  <source src="https://github.com/vietduygiapdz/loveyou/raw/8d9cc83b0ba45c645bde7ba9562b460eb8aeac4b/utomp3.com%20-%20Ph%C3%A9p%20M%C3%A0u%20%C4%90%C3%A0n%20C%C3%A1%20G%E1%BB%97%20OST%20%20Mounter%20x%20MAYDAYs%20Minh%20T%E1%BB%91c%20%20Official%20MV%20(1).mp3" type="audio/mpeg" />
-  Your browser does not support the audio element.
-</audio>
+<div id="intro"></div>
+<button id="playButton">Bắt đầu</button>
 
-<div id="instructionText">Bấm vào nút dưới đây</div>
-<button id="playButton">Play</button>
+<div id="scene-container">
+  <div id="scene"></div>
+</div>
 
 <script>
-  const textLines = [
-    "Chúc mừng sinh nhật bấy bi",
-    "Chúc tuổi mới xinh đệp học giỏi",
-    "Chúc eim đỗ nv1 oách xà lách phong cách",
-    "Mong rằng cta sẽ mãi ở bên nhauuuu",
-    "Boi phố Hà Nội - lặn lội gửi ngàn cái ôm",
-    "Hê hê nào về đứng dưới sân trường đừng bất ngờ",
-    "Đây là VDuy dzai s1 thế giới =)))",
-    "Cười nhiều lên nhá cho ló xink",
-    "Nothing beats a Sinh nhật Ánh Tuyết holiday =)))"
+  const messages = [
+    "Chúc mừng sinh nhật bbi",
+    "Chúc tuổi 17 rực rỡ nhé",
+    "Mong rằng chúng ta sẽ ở bên nhay thật lâu",
+    "Chúc bbi mãi học giỏi, xinh đẹp, đáng iu",
+    "Nếu một ngày thấy anh ở trường cũng đừng bất ngờ :>",
+    "Chúng ta sắp ở bên nhau 2 năm rồi đó",
+    "Chúc em sẽ luôn tươi cười nhe, đáng iu lắm đó",
+    "Anh iu em nhất trên đời"
   ];
 
   const hearts = ["💗", "💓", "💖", "💞", "💝", "❤️", "💕"];
+  const scene = document.getElementById('scene');
 
-  // Tạo ngôi sao nhấp nháy nền
   for (let i = 0; i < 150; i++) {
     const star = document.createElement('div');
     star.className = 'star';
@@ -141,60 +166,110 @@
     document.body.appendChild(star);
   }
 
-  const playBtn = document.getElementById('playButton');
-  const instructionText = document.getElementById('instructionText');
-  const audio = document.getElementById('audio');
+  // Pre-create text elements
+  const textElements = messages.map(msg => {
+    const el = document.createElement('div');
+    el.className = 'falling text hidden';
+    const z = Math.floor(Math.random() * 1000) - 600;
+    el.style.left = `${Math.random() * 80}vw`;
+    el.style.setProperty('--depth', `${z}px`);
+    el.innerText = msg;
+    scene.appendChild(el);
+    return el;
+  });
 
-  // Hàm tạo chữ rơi ngẫu nhiên
-  function createFallingTexts() {
-    textLines.forEach(line => {
-      const text = document.createElement('div');
-      text.className = 'falling glow-text';
-      text.textContent = line;
+  // Pre-create heart elements
+  const heartElements = [];
+  for (let i = 0; i < 50; i++) {
+    const el = document.createElement('div');
+    el.className = 'falling heart hidden';
+    const z = Math.floor(Math.random() * 1000) - 600;
+    el.style.left = `${Math.random() * 100}vw`;
+    el.style.setProperty('--depth', `${z}px`);
+    el.innerText = hearts[Math.floor(Math.random() * hearts.length)];
+    scene.appendChild(el);
+    heartElements.push(el);
+  }
 
-      // vị trí ngang random từ 0 đến 90vw (để không tràn)
-      const left = Math.random() * 90;
-      text.style.left = `${left}vw`;
+  let rotateX = 0;
+  let rotateY = 0;
+  let scale = 0.85;
+  let startX, startY;
 
-      // thời gian rơi random từ 10 đến 15 giây
-      text.style.animationDuration = `${10 + Math.random() * 5}s`;
+  function onStart(e) {
+    startX = e.touches ? e.touches[0].clientX : e.clientX;
+    startY = e.touches ? e.touches[0].clientY : e.clientY;
+    document.addEventListener(e.type === 'touchstart' ? 'touchmove' : 'mousemove', onMove);
+    document.addEventListener(e.type === 'touchstart' ? 'touchend' : 'mouseup', onEnd);
+  }
 
-      // delay random để không rơi cùng lúc
-      text.style.animationDelay = `${Math.random() * 15}s`;
+  function onMove(e) {
+    const x = e.touches ? e.touches[0].clientX : e.clientX;
+    const y = e.touches ? e.touches[0].clientY : e.clientY;
+    const dx = x - startX;
+    const dy = y - startY;
+    rotateY += dx * 0.2;
+    rotateX -= dy * 0.2;
+    scene.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${scale})`;
+    startX = x;
+    startY = y;
+  }
 
-      document.body.appendChild(text);
+  function onEnd() {
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onEnd);
+    document.removeEventListener('touchmove', onMove);
+    document.removeEventListener('touchend', onEnd);
+  }
+
+  document.addEventListener("wheel", function(e) {
+    e.preventDefault();
+    scale += e.deltaY * -0.001;
+    scale = Math.min(Math.max(0.5, scale), 2);
+    scene.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${scale})`;
+  }, { passive: false });
+
+  scene.addEventListener('mousedown', onStart);
+  scene.addEventListener('touchstart', onStart);
+
+  function startFalling(element, duration, delay) {
+    element.classList.remove('hidden');
+    element.style.opacity = '0';
+    setTimeout(() => {
+      element.style.opacity = '1';
+      element.style.animationDuration = `${duration}s`;
+      element.style.animationDelay = '0s';
+      element.classList.add(element.classList.contains('text') ? 'animate-text' : 'animate-heart');
+
+      element.addEventListener('animationend', () => {
+        element.classList.remove('animate-text', 'animate-heart');
+        element.classList.add('hidden');
+        setTimeout(() => {
+          const newDuration = element.classList.contains('text') ? 6 + Math.random() * 6 : 5 + Math.random() * 5;
+          const newDelay = Math.random() * 0.2;
+          startFalling(element, newDuration, newDelay);
+        }, 0);
+      }, { once: true });
+    }, delay * 1000);
+  }
+
+  document.getElementById("playButton").addEventListener("click", () => {
+    document.getElementById("intro").remove();
+    document.getElementById("playButton").remove();
+
+    textElements.forEach((el, index) => {
+      const delay = index * 0.2 + Math.random() * 0.3;
+      const duration = 6 + Math.random() * 6;
+      startFalling(el, duration, delay);
     });
-  }
 
-  // Hàm tạo trái tim rơi
-  function createFallingHearts() {
-    for (let i = 0; i < 40; i++) {
-      const heart = document.createElement('div');
-      heart.className = 'heart falling';
-      heart.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
-
-      heart.style.left = `${Math.random() * 100}vw`;
-      heart.style.animationDuration = `${5 + Math.random() * 6}s`;
-      heart.style.animationDelay = `${Math.random() * 10}s`;
-
-      document.body.appendChild(heart);
-    }
-  }
-
-  playBtn.addEventListener('click', () => {
-    // Bật nhạc
-    audio.play();
-
-    // Ẩn nút và chữ hướng dẫn
-    playBtn.style.display = 'none';
-    instructionText.style.display = 'none';
-
-    // Tạo hiệu ứng chữ rơi + trái tim rơi
-    createFallingTexts();
-    createFallingHearts();
+    heartElements.forEach((el, index) => {
+      const delay = index * 0.2 + Math.random() * 0.3;
+      const duration = 5 + Math.random() * 5;
+      startFalling(el, duration, delay);
+    });
   });
 </script>
 
 </body>
 </html>
-
